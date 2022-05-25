@@ -2,8 +2,13 @@ cmake_minimum_required(VERSION 3.21)
 project(Tetris)
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(Curses REQUIRED)
-include_directories(${CURSES_INCLUDE_DIRS})
+set(SOURCES main.cpp
+            src/Pieces.cpp)
 
-add_executable(Tetris main.cpp)
-target_link_libraries(Tetris ${CURSES_LIBRARIES})
+find_package(Curses REQUIRED)
+
+add_executable(${PROJECT_NAME} ${SOURCES})
+target_include_directories(${PROJECT_NAME} PRIVATE ./inc)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${CURSES_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${CURSES_LIBRARIES})

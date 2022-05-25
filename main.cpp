@@ -2,6 +2,7 @@
 
 #include <curses.h>
 
+
 int main()
 {
     char users_name[ 100 ];
