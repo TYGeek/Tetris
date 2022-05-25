@@ -22,33 +22,50 @@ enum class EPiecesType
 
 struct IPieces {
     virtual ~IPieces();
-    virtual matrix4x4 getPieces() = 0;
+    virtual matrix4x4 getMesh() = 0;
+    virtual void rotate() = 0;
 };
 
 struct Z_Piece: IPieces
 {
     Z_Piece();
-    matrix4x4 getPieces();
+    matrix4x4 getMesh();
     ~Z_Piece();
 };
 
 struct PiecesFactory
 {
     IPieces createPiece(EPiecesType type);
+    IPieces createRandomPiece();
 };
 
 // Singleton board
 struct Board
 {
-    Board(Board&) = delete;                     // delete copy constructor
-    Board operator=(const Board&) = delete;     //
+    Board() = delete;
+    Board(Board const&) = delete;               // delete copy constructor
+    Board operator=(Board const&) = delete;     //
 
     static Board* getInstance();
 
-    void drawPiece(IPieces element);
+    void drawPiece(IPieces const& element);
+
+    // interact with user
+    void userEvent();
+    void moveLeft();
+    void moveRight();
+    void rotate();
+
+    bool stopMoveElement(IPieces const& element);
+    unsigned int checkFullLine();//search fulling polygons on the board
+    void repaintField();//
 private:
-    Board();                                     // constructor
-    static Board* instance_;                     // board instance
+    Board(unsigned int height, unsigned int width);         // constructor
+    static Board* instance_;                                // board instance
+
+    unsigned int deadLine;      // current upper position of elements on board
+    unsigned int curX_element;  // current element position on board axis X
+    unsigned int curY_element;  // current element position on board axis Y
 };
 
 Board* Board::instance_ = nullptr;

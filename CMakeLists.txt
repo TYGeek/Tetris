@@ -3,7 +3,8 @@ project(Tetris)
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCES main.cpp
-            src/Pieces.cpp)
+           # src/Pieces.cpp
+        )
 
 find_package(Curses REQUIRED)
 

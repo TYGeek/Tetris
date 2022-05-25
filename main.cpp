@@ -5,27 +5,23 @@
 
 int main()
 {
-    char users_name[ 100 ];
+    int i = 0;
+    bool isGameOver = false;
+    while (not isGameOver)
+    {
+        for (int row = 0; row < 50; ++row)
+        {
+            for (int colm = 0; colm < 50; ++colm)
+            {
+                if ( row == 0 || row == 49 ) std::cout << '#';
+                else if( colm == 0 || colm == 49 ) std::cout << '#';
+                else std::cout << ' ';
+            }
+            std::cout << std::endl;
+        }
 
-    initscr();
-    (void)echo();
-
-    addstr( "What is your name> " );
-    refresh();
-    getnstr( users_name, sizeof( users_name ) - 1 );
-
-    /* Here is where we clear the screen.                  */
-    /* (Remember, when using Curses, no change will appear */
-    /* on the screen until <b>refresh</b>() is called.     */
-    clear();
-
-    printw( "Greetings and salutations %s!\n", users_name );
-    refresh();
-
-    printw( "\n\n\nPress ENTER to quit." );
-    refresh();
-    getnstr( users_name, sizeof( users_name ) - 1 );
-
-    endwin();
+        //1.  clear screen
+        isGameOver = true;
+    }
     return 0;
 }
