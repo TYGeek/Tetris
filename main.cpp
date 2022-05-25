@@ -3,6 +3,20 @@
 #include <curses.h>
 #include "Pieces.h"
 
+void create_board(std::vector<std::vector<int>>& board, int height, int width)
+{
+    for(int row = 0; row < height; ++row) {
+        for (int colm = 0; colm < width; ++colm)
+        {
+            if(row == 0 || row == height - 1)
+            {
+                board.at(row).push_back(1);
+            }
+        }
+        board.emplace_back(std::vector<int>());
+
+    }
+}
 
 int main()
 {
@@ -28,8 +42,14 @@ int main()
 //    getnstr( users_name, sizeof( users_name ) - 1 );
 //
 //    endwin();
-    FigureGenerator generator;
-    const IPieces* obj = generator.createPiece();
+    //FigureGenerator generator;
+    //const IPieces* obj = generator.createPiece();
+    int height{10};
+    int width{10};
+    std::vector<std::vector<int>> board;
+
+
+
 
     return 0;
 }

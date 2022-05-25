@@ -27,9 +27,9 @@ int instruments::checkUpperLimit(int current, int max)
 const IPieces* FigureGenerator::createPiece()
 {
 
-    instruments::generateRandNum(0, static_cast<int>(EPiecesType::S_element));
+    int genNumber = instruments::generateRandNum(0, static_cast<int>(EPiecesType::S_element));
 
-    switch (generatorVariants)
+    switch (static_cast<EPiecesType>(genNumber))
     {
         case(EPiecesType::L_element):
         {
