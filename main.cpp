@@ -1,6 +1,15 @@
 #include <iostream>
 
 #include <curses.h>
+class GameFramework
+{
+public:
+    GameFramework(): isRun(true){};
+public:
+    bool isRun;
+};
+
+
 
 int main()
 {
@@ -26,5 +35,7 @@ int main()
     getnstr( users_name, sizeof( users_name ) - 1 );
 
     endwin();
+
+
     return 0;
 }
