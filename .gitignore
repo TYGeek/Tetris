@@ -3,3 +3,9 @@
 
 # CMake
 cmake-build-*/
+
+# Visual studio
+.vs
+
+# Visual studio out
+out

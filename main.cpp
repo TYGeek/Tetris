@@ -1,31 +1,91 @@
+#include <array>
 #include <iostream>
+#include<Windows.h>
 
-#include <curses.h>
 
+/*
+
+    Sprite / Board
+|-------------- x+
+|0
+|1   1
+|0
+|
+y+
+
+    #
+    #
+    ###
+      #
+      #
+
+*/
 
 int main()
 {
-    char users_name[ 100 ];
+ 
+    std::array<int, 4> board =  {0, 0, 0, 1};
+    std::array<int, 2> sprite = {1, 1};
+    size_t posY  = 0;   //счетчик положения обьекта
+    bool endGame{ false };
+    size_t deadLine{ board.size()-1 };
+    bool createNewSprite{ false };
 
-    initscr();
-    (void)echo();
+    while( !endGame )
+    {
 
-    addstr( "What is your name> " );
-    refresh();
-    getnstr( users_name, sizeof( users_name ) - 1 );
+        for(int row = 0; row < board.size(); row++) // cycle from down to up 4
+        {
+            if( board[row] == 1 ) 
+            { 
+                std::cout << "#"; 
+            };  // draw element from board
 
-    /* Here is where we clear the screen.                  */
-    /* (Remember, when using Curses, no change will appear */
-    /* on the screen until <b>refresh</b>() is called.     */
-    clear();
+            if ( row <= posY )                   // start draw sprite
+            {
+                int index = posY - row; 
+                if( index < sprite.size() )      // check out of array
+                {
+                    if (sprite[index] == 1) { std::cout << "#"; };    // draw if 1
+                    
+                    // save sprite on board if next element on board == 1 and cur element in sprite == 1
+                    if ( row != board.size()-1 && board[row+1] == sprite[index] && !createNewSprite)
+                    {
+                        for (int i = 0; i < sprite.size(); i++)
+                        {
+                            if (row - i < 0) break;
+                            board[row-i] = sprite[i];     // save Sprite in board 
+                            deadLine--;
+                        }
 
-    printw( "Greetings and salutations %s!\n", users_name );
-    refresh();
+                        createNewSprite = true;    
+                    }
+                }
+            }
+            std::cout << std::endl;
+        }
 
-    printw( "\n\n\nPress ENTER to quit." );
-    refresh();
-    getnstr( users_name, sizeof( users_name ) - 1 );
+        if (deadLine == 0)
+        {
+            endGame = true;
+            break;
+        }
 
-    endwin();
+        if (createNewSprite)
+        {
+            system("cls");
+            posY = 0;
+            createNewSprite = false;
+        }
+        else
+        {
+            system("cls");
+            Sleep(1);
+            ++posY;
+        }
+        
+    }
+
+
     return 0;
 }
