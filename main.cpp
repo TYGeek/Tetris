@@ -21,6 +21,7 @@ y+
 
 */
 
+
 int main()
 {
  
@@ -64,7 +65,6 @@ int main()
             }
             std::cout << std::endl;
         }
-
         if (deadLine == 0)
         {
             endGame = true;
@@ -85,7 +85,5 @@ int main()
         }
         
     }
-
-
     return 0;
 }
