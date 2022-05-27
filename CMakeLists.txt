@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.21)
 project(Tetris)
 set(CMAKE_CXX_STANDARD 17)
 
-set(SOURCES main.cpp)
-            #src/Pieces.cpp
+set(SOURCES main.cpp
+            src/Pieces.cpp
+            src/Board.cpp )
                     
 
 #find_package(Curses REQUIRED)

@@ -1,15 +1,15 @@
 
-#ifndef TETRIS_PIECES_H
-#define TETRIS_PIECES_H
+#ifndef TETRIS_SpriteS_H
+#define TETRIS_SpriteS_H
 // forward declaration
 #include "array"
 #include "vector"
-using bodyType = std::array<std::array<int, 4>,4>;
-//struct matrix4x4;
+using spriteSpace = std::array<std::array<int, 4>,4>;
+using skinsCollection = std::vector<spriteSpace>;  //1. skin_0_deg 2. skin_90_deg, 3.skin_180_deg, 4. skin_270_deg
 
 
 // type of element
-enum class EPiecesType
+enum class ESpriteType
 {
     L_element = 0,
     I_element,
@@ -26,175 +26,129 @@ namespace instruments
     int checkUpperLimit(int current, int max);
 }
 
-struct IPieces {
-    virtual const bodyType& getBody() = 0;
-    virtual void rotate() = 0;
-    virtual ~IPieces() = default;
 
+struct ISprite {
+public:
+
+    float posX;
+    float posY;
+public:
+
+    ISprite() = delete;
+    ISprite(ISprite const&) = delete;
+    ISprite& operator=(ISprite const&) = delete;
+
+    virtual const spriteSpace& getBody(); // get current skin
+    virtual void rotate();                // rotate current skin 
+    friend const ISprite* createSprite();
+    virtual ~ISprite() = default;
 protected:
-    using skinsCollection = std::vector<bodyType>; //1. skin_0_deg 2. skin_90_deg, 3.skin_180_deg, 4. skin_270_deg
-    skinsCollection Wardrobe;
-    bodyType* currentSkin;
+    skinsCollection wardrobe;
+    spriteSpace* currentSkin;
     int currentSkinPos;
     int maxSkinPos;
 };
 
-struct L_Piece: IPieces
+
+struct L_Sprite: ISprite
 {
-    L_Piece* getInstance();
-    L_Piece(const L_Piece&) = delete;
-    L_Piece& operator=(const L_Piece&) = delete;
-    const bodyType& getBody() override { return *currentSkin; };
-    void rotate() override;
-    ~L_Piece() = default;
+    L_Sprite(const L_Sprite&) = delete;
+    L_Sprite& operator=(const L_Sprite&) = delete;
+    ~L_Sprite() override = default;
+    static ISprite* getInstance(); // get random skin L_sprite
 private:
-    static L_Piece* object;
-    L_Piece();
+    static ISprite* object;
+    L_Sprite();
 };
-L_Piece* L_Piece::object = nullptr;
+ISprite* L_Sprite::object = nullptr;
 
-struct I_Piece: IPieces
+
+
+struct I_Sprite: ISprite
 {
-    I_Piece();
-    const bodyType& getBody() override {return *currentSkin;};;
-    void rotate() override;
-    ~I_Piece() = default;
+    
+    I_Sprite(const I_Sprite&) = delete;
+    I_Sprite& operator=(const I_Sprite&) = delete;
+    static ISprite* getInstance();
+    ~I_Sprite() override = default;
+private:  
+    static ISprite* object;
+    I_Sprite();
+};
+ISprite* I_Sprite::object = nullptr;
+
+struct J_Sprite: ISprite
+{
+    J_Sprite(const J_Sprite&) = delete;
+    J_Sprite& operator=(const J_Sprite&) = delete;
+    static ISprite* getInstance();
+    ~J_Sprite() override = default;
 private:
-
+    static ISprite* object;
+    J_Sprite();
 };
+ISprite* J_Sprite::object = nullptr;
 
-struct J_Piece: IPieces
+struct O_Sprite: ISprite
 {
-    J_Piece();
-    const bodyType& getBody() override;
-    void rotate() override;
-    ~J_Piece();
-
-};
-
-struct O_Piece: IPieces
-{
-    O_Piece();
-    const bodyType& getBody() override;
-    void rotate() override;
-    ~O_Piece();
-};
-
-struct T_Piece: IPieces
-{
-    T_Piece();
-    const bodyType& getBody() override;
-    void rotate() override;
-    ~T_Piece();
-};
-
-struct Z_Piece: IPieces
-{
-    Z_Piece();
-    const bodyType& getBody() override;
-    void rotate() override;
-    ~Z_Piece() override;
-};
-
-struct S_Piece: IPieces
-{
-    S_Piece();
-    const bodyType& getBody() override;
-    void rotate() override;
-    ~S_Piece();
-};
-
-struct FigureGenerator
-{
-    const IPieces* createPiece();
-};
-
-// Singleton board
-struct Board
-{
-    Board() = delete;
-    Board(Board const&) = delete;               // delete copy constructor
-    Board operator=(Board const&) = delete;     //
-
-    static Board* getInstance();
-
-    void draw(IPieces const& element);
-
-    // interact with user
-    void userEvent();
-    void moveLeft();
-    void moveRight();
-    void rotate();
-
-    bool stopMoveElement(IPieces const& element);
-    unsigned int checkFullLine();//search fulling polygons on the board
-    void repaintField();//
+    O_Sprite(const O_Sprite&) = delete;
+    O_Sprite& operator=(const O_Sprite&) = delete;
+    ~O_Sprite() override = default;
+    static ISprite* getInstance();
 private:
-    Board(unsigned int height, unsigned int width);         // constructor
-    static Board* instance_;                                // board instance
-
-    unsigned int deadLine;      // current upper position of elements on board
-    unsigned int curX_element;  // current element position on board axis X
-    unsigned int curY_element;  // current element position on board axis Y
+    static ISprite* object;
+    O_Sprite();
 };
+ISprite* O_Sprite::object = nullptr;
 
-//1. Генерация элемента
-//2. Отрисовка карты
-
-Board* Board::instance_ = nullptr;
-
-struct IPieces {
-    virtual ~IPieces();
-    virtual matrix4x4 getMesh() = 0;
-    virtual void rotate() = 0;
-};
-
-struct Z_Piece: IPieces
+struct T_Sprite: ISprite
 {
-    Z_Piece();
-    matrix4x4 getMesh();
-    ~Z_Piece();
-};
-
-struct PiecesFactory
-{
-    IPieces createPiece(EPiecesType type);
-    IPieces createRandomPiece();
-};
-
-// Singleton board
-struct Board
-{
-    Board() = delete;
-    Board(Board const&) = delete;               // delete copy constructor
-    Board operator=(Board const&) = delete;     //
-
-    static Board* getInstance();
-
-    void drawPiece(IPieces const& element);
-
-    // interact with user
-    void userEvent();
-    void moveLeft();
-    void moveRight();
-    void rotate();
-
-    bool stopMoveElement(IPieces const& element);
-    unsigned int checkFullLine();//search fulling polygons on the board
-    void repaintField();//
+    T_Sprite(const T_Sprite&) = delete;
+    T_Sprite& operator=(const T_Sprite&) = delete;
+    ~T_Sprite() override = default;
+     static ISprite* getInstance();
 private:
-    Board(unsigned int height, unsigned int width);         // constructor
-    static Board* instance_;                                // board instance
-
-    unsigned int deadLine;      // current upper position of elements on board
-    unsigned int curX_element;  // current element position on board axis X
-    unsigned int curY_element;  // current element position on board axis Y
+    static ISprite* object;
+    T_Sprite();
+    
 };
+ISprite* T_Sprite::object = nullptr;
 
-Board* Board::instance_ = nullptr;
+
+struct Z_Sprite: ISprite
+{
+    Z_Sprite(const Z_Sprite&) = delete;
+    Z_Sprite& operator=(const Z_Sprite&) = delete;
+    ~Z_Sprite() override = default;
+    static ISprite* getInstance();
+private:
+    static ISprite* object;
+    Z_Sprite();
+};
+ISprite* Z_Sprite::object = nullptr;
+
+struct S_Sprite: ISprite
+{
+    S_Sprite(const S_Sprite&) = delete;
+    S_Sprite& operator=(const S_Sprite&) = delete;
+    ~S_Sprite() override = default;
+    static ISprite* getInstance();
+private:
+    static ISprite* object;
+    S_Sprite();
+};
+ISprite* S_Sprite::object = nullptr;
 
 
-#endif //TETRIS_PIECES_H
+
+const ISprite* createSprite(); // random sprite
+void deleteSprites();
+
+
+
+
+
+#endif //TETRIS_SpriteS_H
 
 
 
