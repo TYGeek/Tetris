@@ -271,9 +271,9 @@ boardSpace render_logic(boardSpace& board, spriteSpace const& sprite, float posY
 
 
 
-
 int main()
 {
+
 
     boardSpace board = { { {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                            {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
