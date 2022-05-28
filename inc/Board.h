@@ -20,7 +20,7 @@ struct Board
     boardSpace render_logic(boardSpace& board, ISprite const& sprite);
     int getDeadLine( boardSpace const& board);
     boardSpace boardBody;
-
+    ~Board();
 private:
     int deadLine; // current upper position of elements on board
     float dX;     // [pix/s] 

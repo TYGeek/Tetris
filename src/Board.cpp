@@ -8,6 +8,11 @@
 
 Board* Board::body = nullptr;
 
+Board::Board(float dX, float dY, float dt) :dX{ dX }, dY{ dY }, dt{ dt }
+{
+    createBoard();
+};
+
 boardSpace Board::render_logic(boardSpace& board, ISprite const& sprite)
 {
     eventHandler(board, const_cast<ISprite&>(sprite));
@@ -67,6 +72,7 @@ bool Board::isIntersection( boardSpace const& board, ISprite const& sprite)
     return false;
 };
 
+
 int Board::getDeadLine(const boardSpace& board)
 {
     for (int row = 0, rows = board.size(); row < rows; ++row)
@@ -79,7 +85,8 @@ int Board::getDeadLine(const boardSpace& board)
             }
         }
     }
-};
+}
+
 
 void Board::insertSprite(boardSpace& board, ISprite const& sprite)
 {
@@ -138,6 +145,7 @@ bool Board::allowMoveLeft(const boardSpace& board, ISprite const& sprite)
     return true;
 }
 
+
 bool Board::allowMoveRight(const boardSpace& board, ISprite const& sprite)
 {
     spriteSpace const& spriteBody = sprite.getBody();
@@ -164,30 +172,35 @@ bool Board::allowMoveRight(const boardSpace& board, ISprite const& sprite)
 
 bool Board::allowRotate(const boardSpace& board, ISprite const & sprite)
 {
-    spriteSpace const& spriteBody = sprite.getBody();
-    int spriteRows = spriteBody.size();
-    int spriteColums = spriteBody.at(0).size();
+    spriteSpace const& curSprite = sprite.getBody();
+    int curSpriteRows = curSprite.size();
+    int curSpriteColums = curSprite.at(0).size();
 
-    int next_spriteRows = spriteColums;
-    int next_spriteColums = spriteRows;
+    spriteSpace const& nextSprite = sprite.getNextSkin();
+    int nextSpriteRows = nextSprite.size();
+    int nextSpriteColums = nextSprite.at(0).size();
+
+    int checkSquare = (curSpriteRows > nextSpriteRows) ? curSpriteRows : nextSpriteRows;
 
     int posY = static_cast<int>(sprite.posY);
     int posX = static_cast<int>(sprite.posX);
 
-    if (board.size() - 1 < next_spriteRows + posY || board.at(0).size()-1 < next_spriteColums + posX)
+    // check if new sprite don't cross boards
+    if (board.size() < nextSpriteRows + posY || board.at(0).size() < nextSpriteColums + posX)
         return false;
 
-    for (size_t row = 0, rows = next_spriteRows; row < rows; row++)
+    // check if old sprite between rotation don't cross another element
+    for (size_t row = 0, rows = checkSquare; row < rows; row++)
     {
-        // check rotate
-        if (spriteBody.at(row).at(next_spriteColums - 1) == 1)
+        for (size_t colm = 0, colms = checkSquare; colm < colms; colm++)
         {
-            if (board.at(posY + row).at(posX + next_spriteColums) == 1)
+            if (board.at(posY + row).at(posX + colm) == 1)
             {
                 return false;
             }
         }
     }
+
     return true;
 }
 
@@ -263,10 +276,6 @@ boardSpace Board::destroyLine(boardSpace board)
     return board;
 }
 
-Board::Board(float dX, float dY, float dt) :dX{ dX }, dY{ dY }, dt{ dt } 
-{ 
-    createBoard(); 
-};
 
 Board* Board::getInstance()
 {
@@ -280,3 +289,7 @@ Board* Board::getInstance()
 }
 
 
+Board::~Board()
+{
+    { std::cout << "delete board" << std::endl; }
+}

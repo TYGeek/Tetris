@@ -2,7 +2,7 @@
 #ifndef TETRIS_PIECES_H
 #define TETRIS_PIECES_H
 
-
+#include <iostream>
 #include "array"
 #include "vector"
 using spriteSpace = std::vector<std::vector<int>>;
@@ -18,7 +18,8 @@ enum class ESpriteType
     O_element,
     T_element,
     Z_element,
-    S_element
+    S_element,
+    END
 };
 
 namespace instruments
@@ -40,11 +41,11 @@ public:
     //ISprite(ISprite const&) = delete;
     //ISprite& operator=(ISprite const&) = delete;
    
-
+    virtual const spriteSpace& getNextSkin() const;
     virtual spriteSpace& getBody() const; // get current skin
     virtual void rotate();                // rotate current skin 
     
-    virtual ~ISprite() = default;
+    virtual ~ISprite() { std::cout << "delete Sprite" << std::endl; };
 
 protected:
     virtual void createBody() = 0;
@@ -71,7 +72,7 @@ struct L_Sprite: ISprite
 private:
     static ISprite* object;
     L_Sprite();
-
+   
 protected:
     void createBody() override;
 };
