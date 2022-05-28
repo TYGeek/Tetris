@@ -3,12 +3,15 @@ project(Tetris)
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCES main.cpp
-            src/Pieces.cpp)
+            src/Pieces.cpp
+            src/Board.cpp )
+                    
 
-find_package(Curses REQUIRED)
+#find_package(Curses REQUIRED)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ./inc)
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CURSES_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${CURSES_LIBRARIES})
+#target_include_directories(${PROJECT_NAME} PRIVATE ${CURSES_INCLUDE_DIRS})
+#target_link_libraries(${PROJECT_NAME} PRIVATE ${CURSES_LIBRARIES})
+

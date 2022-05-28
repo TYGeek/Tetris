@@ -1,31 +1,34 @@
+#include "Board.h"
+#include "Pieces.h"
 #include <iostream>
-
-#include <curses.h>
 
 
 int main()
 {
-    char users_name[ 100 ];
 
-    initscr();
-    (void)echo();
+    ISprite* sprite = createSprite();
+    Board* board = Board::getInstance();
 
-    addstr( "What is your name> " );
-    refresh();
-    getnstr( users_name, sizeof( users_name ) - 1 );
+    bool endGame { false };
+    size_t deadLine { board->boardBody.size() - 1 };
 
-    /* Here is where we clear the screen.                  */
-    /* (Remember, when using Curses, no change will appear */
-    /* on the screen until <b>refresh</b>() is called.     */
-    clear();
+    while (!endGame)
+    {
+        board->boardBody = board->render_logic( board->boardBody, *sprite );
+        deadLine = board->getDeadLine( board->boardBody );
+        if (deadLine == 0)
+        {
+            endGame = true;
+            deleteSprites();
+            sprite = nullptr;
+            delete board;
+        }
+        else
+        {
+            sprite = createSprite();
+        }
+    }
 
-    printw( "Greetings and salutations %s!\n", users_name );
-    refresh();
 
-    printw( "\n\n\nPress ENTER to quit." );
-    refresh();
-    getnstr( users_name, sizeof( users_name ) - 1 );
-
-    endwin();
     return 0;
 }
