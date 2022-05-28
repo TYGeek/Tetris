@@ -1,10 +1,16 @@
 #include "Board.h"
+#include "Pieces.h"
+
 #include <iostream>
+#include <Windows.h>
+#include <conio.h>
 
 
-boardSpace Board::render_logic(boardSpace const& board, ISprite const& sprite)
+Board* Board::body = nullptr;
+
+boardSpace Board::render_logic(boardSpace& board, ISprite const& sprite)
 {
-    eventHandler(board, sprite);
+    eventHandler(board, const_cast<ISprite&>(sprite));
 
     if (isIntersection(board, sprite))
     {
@@ -24,16 +30,35 @@ boardSpace Board::render_logic(boardSpace const& board, ISprite const& sprite)
 
 };
 
+void Board::createBoard(int rows, int colms)
+{
+    for(int row = 0; row < rows;row++)
+    {
+        for (int colm = 0; colm < colms; colm++)
+        {
+            if (row == rows - 1)
+                boardBody.at(row).at(colm) = 1;
+            else if (colm == 0 || colm == colms - 1)
+                boardBody.at(row).at(colm) = 1;
+            else
+                boardBody.at(row).at(colm) = 0;
+        }
+    }
+}
+
 
 //  ---------------------- Insert Sprite into Board -------------------------
-bool Board::isIntersection(const boardSpace& board, ISprite const& sprite)
+bool Board::isIntersection( boardSpace const& board, ISprite const& sprite)
 {
-    auto spriteBody = sprite.getBody();
-    for (size_t colm = 0, spriteSize = spriteBody.size(); colm < spriteSize; colm++)
+    spriteSpace const& spriteBody = sprite.getBody();
+    int spriteRows = spriteBody.size();
+    int spriteColums = spriteBody.at(0).size();
+
+    for (size_t colm = 0, spriteSize = spriteColums; colm < spriteSize; colm++)
     {
-        if (spriteBody.at(spriteBody.size()-1 ).at(colm) == 1 )
+        if (spriteBody.at(spriteRows - 1 ).at(colm) == 1 )
         {
-            if ( board.at(sprite.posY + spriteBody.size()).at(sprite.posX + colm) == 1 )
+            if ( board.at(sprite.posY + spriteRows).at(sprite.posX + colm) == 1 )
             {
                 return true;
             }
@@ -58,11 +83,14 @@ int Board::getDeadLine(const boardSpace& board)
 
 void Board::insertSprite(boardSpace& board, ISprite const& sprite)
 {
-    auto spriteBody = sprite.getBody();
+    spriteSpace const& spriteBody = sprite.getBody();
+    int spriteRows = spriteBody.size();
+    int spriteColums = spriteBody.at(0).size();
 
-    for (int row = 0, rows = spriteBody.size(); row < rows; ++row)
-        for (int colm = 0, colms = spriteBody.size(); colm < colms; ++colm)
-            board.at(sprite.posY + row).at(sprite.posX + colm) = spriteBody.at(row).at(colm);
+    for (int row = 0, rows = spriteRows; row < rows; ++row)
+        for (int colm = 0, colms = spriteColums; colm < colms; ++colm)
+            if( spriteBody.at(row).at(colm) == 1 )
+                board.at(sprite.posY + row).at(sprite.posX + colm) = 1;
 
 };
 
@@ -89,11 +117,14 @@ void Board::render(const boardSpace& board)
 
 bool Board::allowMoveLeft(const boardSpace& board, ISprite const& sprite)
 {
-    auto spriteBody = sprite.getBody();
+    spriteSpace const& spriteBody = sprite.getBody();
+    int spriteRows = spriteBody.size();
+    int spriteColums = spriteBody.at(0).size();
+
     int posY = static_cast<int>(sprite.posY);
     int posX = static_cast<int>(sprite.posX);
 
-    for (size_t row = 0, rows = spriteBody.size(); row < rows; row++)
+    for (size_t row = 0, rows = spriteRows; row < rows; row++)
     {
         // check move left
         if (spriteBody.at(row).at(0) == 1)
@@ -109,16 +140,19 @@ bool Board::allowMoveLeft(const boardSpace& board, ISprite const& sprite)
 
 bool Board::allowMoveRight(const boardSpace& board, ISprite const& sprite)
 {
-    auto spriteBody = sprite.getBody();
+    spriteSpace const& spriteBody = sprite.getBody();
+    int spriteRows = spriteBody.size();
+    int spriteColums = spriteBody.at(0).size();
+
     int posY = static_cast<int>(sprite.posY);
     int posX = static_cast<int>(sprite.posX);
 
-    for (size_t row = 0, rows = spriteBody.size(); row < rows; row++)
+    for (size_t row = 0, rows = spriteRows; row < rows; row++)
     {
-        // check move left
-        if (spriteBody.at(row).at(spriteBody.size()-1) == 1)
+        // check move right
+        if (spriteBody.at(row).at(spriteColums - 1) == 1)
         {
-            if (board.at(posY + row).at(posX + spriteBody.size()) == 1)
+            if (board.at(posY + row).at(posX + spriteColums) == 1)
             {
                 return false;
             }
@@ -128,7 +162,37 @@ bool Board::allowMoveRight(const boardSpace& board, ISprite const& sprite)
 }
 
 
-void Board::eventHandler(boardSpace const& board, ISprite const& sprite)
+bool Board::allowRotate(const boardSpace& board, ISprite const & sprite)
+{
+    spriteSpace const& spriteBody = sprite.getBody();
+    int spriteRows = spriteBody.size();
+    int spriteColums = spriteBody.at(0).size();
+
+    int next_spriteRows = spriteColums;
+    int next_spriteColums = spriteRows;
+
+    int posY = static_cast<int>(sprite.posY);
+    int posX = static_cast<int>(sprite.posX);
+
+    if (board.size() - 1 < next_spriteRows + posY || board.at(0).size()-1 < next_spriteColums + posX)
+        return false;
+
+    for (size_t row = 0, rows = next_spriteRows; row < rows; row++)
+    {
+        // check rotate
+        if (spriteBody.at(row).at(next_spriteColums - 1) == 1)
+        {
+            if (board.at(posY + row).at(posX + next_spriteColums) == 1)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
+void Board::eventHandler(boardSpace const& board, ISprite& sprite)
 {
 
     sprite.posY += dY * dt;
@@ -161,7 +225,8 @@ void Board::eventHandler(boardSpace const& board, ISprite const& sprite)
 
             // Space event handler
         case(32):
-            sprite.rotate();
+            if(allowRotate(board, sprite))
+                   sprite.rotate();
             break;
         }
     }
@@ -174,7 +239,7 @@ boardSpace Board::destroyLine(boardSpace board)
     bool fullRow = true;
     for (size_t row = 0, rows = board.size() - 1; row < rows; row++)
     {
-        for (size_t colm = 1, colms = board.size() - 1; colm < colms; colm++)
+        for (size_t colm = 1, colms = board.at(0).size() - 1; colm < colms; colm++)
         {
             if (board.at(row).at(colm) == 0)
             {
@@ -185,7 +250,7 @@ boardSpace Board::destroyLine(boardSpace board)
 
         if (fullRow)
         {
-            for (size_t colm = 1, colms = board.size() - 1; colm < colms; colm++)
+            for (size_t colm = 1, colms = board.at(0).size() - 1; colm < colms; colm++)
                 board.at(row).at(colm) = 0;
 
             for (size_t cur_row = row, zero_row = 0; cur_row > zero_row; cur_row--)
@@ -198,7 +263,10 @@ boardSpace Board::destroyLine(boardSpace board)
     return board;
 }
 
-Board::Board(float dX, float dY, float dt) :dX{ dX }, dY{ dY }, dt{ dt } {};
+Board::Board(float dX, float dY, float dt) :dX{ dX }, dY{ dY }, dt{ dt } 
+{ 
+    createBoard(); 
+};
 
 Board* Board::getInstance()
 {

@@ -4,11 +4,20 @@
 
 #include "Pieces.h"
 
+ISprite* L_Sprite::object = nullptr;
+ISprite* I_Sprite::object = nullptr;
+ISprite* J_Sprite::object = nullptr;
+ISprite* O_Sprite::object = nullptr;
+ISprite* T_Sprite::object = nullptr;
+ISprite* Z_Sprite::object = nullptr;
+ISprite* S_Sprite::object = nullptr;
+
 
 int instruments::generateRandNum(int low, int high)
 {
+
     int range = high - low + 1;
-    int result = (std::rand() % range + low);
+    int result = ( std::rand() % range + low );
     return result;
 }
 
@@ -27,58 +36,54 @@ int instruments::checkUpperLimit(int current, int max)
 void ISprite::rotate()
 {
     currentSkinPos = instruments::checkUpperLimit(currentSkinPos, maxSkinPos);
-    currentSkin = &Wardrobe[currentSkinPos];
+    currentSkin = &wardrobe[currentSkinPos];
 }
 
-const spriteSpace& ISprite::getBody()
+spriteSpace& ISprite::getBody() const
 {
     return *currentSkin;
 }
 
-const ISprite* createSprite()
+ISprite* createSprite()
 {
 
     int genNumber = instruments::generateRandNum(0, static_cast<int>(ESpriteType::S_element));
-    ISprite* catcher{nullptr};
-    
+    ISprite* catcher { nullptr };
+
     switch (static_cast<ESpriteType>(genNumber))
     {
-        case(ESpriteType::L_element):
-        {
-            catcher = L_Sprite::getInstance();
-        };
-        case(ESpriteType::I_element):
-        {
-            catcher = I_Sprite::getInstance();
-        };
-        case(ESpriteType::J_element):
-        {
-            catcher = J_Sprite::getInstance();
-        };
-        case(ESpriteType::O_element):
-        {
-            catcher = O_Sprite::getInstance();
-        };
-        case(ESpriteType::T_element):
-        {
-            catcher = T_Sprite::getInstance();
-        }
-        case(ESpriteType::Z_element):
-        {
-            catcher = Z_Sprite::getInstance();
-        }
-        case(ESpriteType::S_element):
-        {
-            catcher = S_Sprite::getInstance();
-        }
-        default:
-        {
-            return nullptr;
-        }
+    case(ESpriteType::L_element):
+        catcher = L_Sprite::getInstance();
+        break;
+    case(ESpriteType::I_element):
+        catcher = I_Sprite::getInstance();
+        break;
+    case(ESpriteType::J_element):
+        catcher = J_Sprite::getInstance();
+        break;
+    case(ESpriteType::O_element):
+        catcher = O_Sprite::getInstance();
+        break;
+    case(ESpriteType::T_element):
+        catcher = T_Sprite::getInstance();
+        break;
+    case(ESpriteType::Z_element):
+        catcher = Z_Sprite::getInstance();
+        break;
+    case(ESpriteType::S_element):
+        catcher = S_Sprite::getInstance();
+        break;
+    default:
+        catcher = nullptr;
+        break;
     }
-    catcher->currentSkinPos = instruments::generateRandNum(0, maxSkinPos);
-        
-    catcher->currentSkin = &Wardrobe[currentSkinPos];
+
+    catcher->posX = 2.0;
+    catcher->posY = 0.0;
+    catcher->currentSkinPos = instruments::generateRandNum(0, catcher->maxSkinPos);
+    catcher->currentSkin = &catcher->wardrobe[catcher->currentSkinPos];
+
+    return catcher;
 
 }
 
@@ -99,46 +104,46 @@ void deleteSprites()
 }
 
 
-L_Sprite::L_Sprite() : posX{ 2.0 }, posY{0.0}, currentSkinPos{ 0 }, currentSkin{ nullptr }
+L_Sprite::L_Sprite()
+{
+    createBody();
+}
+
+void L_Sprite::createBody()
 {
     posX = 2.0;
+    posY = 0.0;
+    currentSkinPos = 0;
+    currentSkin = nullptr;
 
-    spriteSpace processSkin = {{{0, 0, 0, 0},
-                                {1, 1, 0, 0},
-                                {1, 0, 0, 0},
-                                {1, 0, 0, 0}}};
-
-    wardrobe.push_back(processSkin);
-
-    processSkin = {{{0, 0, 0, 0},
-                    {0, 0, 0, 0},
-                    {1, 1, 1, 0},
-                    {0, 0, 1, 0}}};
+    spriteSpace processSkin = { {{1, 1},
+                                 {1, 0},
+                                 {1, 0}} };
 
     wardrobe.push_back(processSkin);
 
-    processSkin = {{{0, 0, 0, 0},
-                    {0, 1, 0, 0},
-                    {0, 1, 0, 0},
-                    {1, 1, 0, 0}}};
+    processSkin = { { {1, 1, 1},
+                      {0, 0, 1}} };
 
     wardrobe.push_back(processSkin);
 
-    processSkin = {{{0, 0, 0, 0},
-                    {0, 0, 0, 0},
-                    {1, 0, 0, 0},
-                    {1, 1, 1, 0}}};
+    processSkin = { { {0, 1},
+                      {0, 1},
+                      {1, 1}} };
+
+    wardrobe.push_back(processSkin);
+
+    processSkin = { { {1, 0, 0},
+                      {1, 1, 1}} };
 
     wardrobe.push_back(processSkin);
 
     maxSkinPos = wardrobe.size() - 1;
-
-
 }
 
-ISprite* LSprite::getInstance()
+ISprite* L_Sprite::getInstance()
 {
-    if (L_Sprite::object == nullptr)
+    if ( object == nullptr )
     {
         object = new L_Sprite();
     }
@@ -146,64 +151,73 @@ ISprite* LSprite::getInstance()
     return object;
 }
 
-
-
-I_Sprite::I_Sprite(): posX{ 2.0 }, posY{0.0}, currentSkinPos{0}, currentSkin{nullptr}
+I_Sprite::I_Sprite()
 {
-    spriteSpace processSkin = {{{0, 0, 0, 0},
-                                {0, 0, 0, 0},
-                                {0, 0, 0, 0},
-                                {1, 1, 1, 1}}}
+    createBody();
+}
+
+void I_Sprite::createBody()
+{
+    posX = 2.0;
+    posY = 0.0; 
+    currentSkinPos = 0; 
+    currentSkin = nullptr;
+
+    spriteSpace processSkin = { {{1, 1, 1, 1}} };
 
     wardrobe.push_back(processSkin);
 
-    processSkin = {{{1, 0, 0, 0},
-                    {1, 0, 0, 0},
-                    {1, 0, 0, 0},
-                    {1, 0, 0, 0}}};
+    processSkin = { {{1},
+                    {1},
+                    {1},
+                    {1}} };
     wardrobe.push_back(processSkin);
 
     maxSkinPos = wardrobe.size() - 1;
 
-    currentSkinPos = instruments::generateRandNum(0, maxSkinPos);
-    currentSkin = &Wardrobe[currentSkinPos];
 }
-
 
 ISprite* I_Sprite::getInstance()
 {
-    if (I_Sprite::object == nullptr)
+    if (object == nullptr)
     {
         object = new I_Sprite();
     }
     return object;
 }
 
-J_Sprite::J_Sprite(): posX{ 2.0 }, posY{0.0}, currentSkinPos{0}, currentSkin{nullptr}
+
+J_Sprite::J_Sprite()
 {
-    spriteSpace processSkin = {{{0, 0, 0, 0},
-                                {0, 1, 0, 0},
-                                {0, 1, 0, 0},
-                                {1, 1, 0, 0}}}
+    createBody();
+}
+
+void J_Sprite::createBody()
+{
+    posX = 2.0;
+    posY = 0.0;
+    currentSkinPos = 0;
+    currentSkin = nullptr;
+
+    spriteSpace processSkin = { { {0, 1},
+                                  {0, 1},
+                                  {1, 1}} };
 
     wardrobe.push_back(processSkin);
 
-    processSkin = {{{0, 0, 0, 0},
-                    {0, 0, 0, 0},
-                    {1, 0, 0, 0},
-                    {1, 1, 1, 0}}};
+    processSkin = { { {1, 0, 0},
+                      {1, 1, 1}} };
     wardrobe.push_back(processSkin);
 
-    processSkin = {{{0, 0, 0, 0},
-                    {1, 1, 0, 0},
-                    {1, 0, 0, 0},
-                    {1, 0, 0, 0}}};
+    processSkin = { {
+                    {1, 1},
+                    {1, 0},
+                    {1, 0}} };
     wardrobe.push_back(processSkin);
 
-    processSkin = {{{0, 0, 0, 0},
-                    {0, 0, 0, 0},
-                    {1, 1, 1, 0},
-                    {0, 0, 1, 0}}};
+    processSkin = { {
+                    {1, 1, 1},
+                    {0, 0, 1}} };
     wardrobe.push_back(processSkin);
 
     maxSkinPos = wardrobe.size() - 1;
@@ -211,7 +225,7 @@ J_Sprite::J_Sprite(): posX{ 2.0 }, posY{0.0}, currentSkinPos{0}, currentSkin{nul
 
 ISprite* J_Sprite::getInstance()
 {
-    if (J_Sprite::object == nullptr)
+    if (object == nullptr)
     {
         object = new J_Sprite();
     }
@@ -219,50 +233,64 @@ ISprite* J_Sprite::getInstance()
 }
 
 
-O_Sprite::O_Sprite(): posX{ 2.0 }, posY{0.0}, currentSkinPos{0}, currentSkin{nullptr}
+O_Sprite::O_Sprite()
 {
-    spriteSpace processSkin = {{{0, 0, 0, 0},
-                                {0, 0, 0, 0},
-                                {1, 1, 0, 0},
-                                {1, 1, 0, 0}}}
+    createBody();
+}
+
+void O_Sprite::createBody()
+{
+    posX = 2.0;
+    posY = 0.0;
+    currentSkinPos = 0;
+    currentSkin = nullptr;
+
+    spriteSpace processSkin = { { {1, 1},
+                                  {1, 1} } };
+    wardrobe.push_back(processSkin);
+
     maxSkinPos = wardrobe.size() - 1;
-    currentSkin = &Wardrobe[currentSkinPos];
 }
 
 ISprite* O_Sprite::getInstance()
 {
-    if (O_Sprite::object == nullptr)
+    if (object == nullptr)
     {
         object = new O_Sprite();
     }
     return object;
 }
 
-T_Sprite::T_Sprite(): posX{ 2.0 }, posY{0.0}, currentSkinPos{0}, currentSkin{nullptr}
+
+T_Sprite::T_Sprite()
 {
-    spriteSpace processSkin = { {{0, 0, 0, 0},
-                                {0, 0, 0, 0},
-                                {0, 1, 0, 0},
-                                {1, 1, 1, 0}} };
+    createBody();
+}
+
+void T_Sprite::createBody()
+{
+    posX = 2.0; 
+    posY = 0.0; 
+    currentSkinPos = 0;
+    currentSkin = nullptr;
+
+    spriteSpace processSkin = {{0, 1, 0},
+                               {1, 1, 1}} ;
 
     wardrobe.push_back(processSkin);
 
-    processSkin = {{{0, 0, 0, 0},
-                    {1, 0, 0, 0},
-                    {1, 1, 0, 0},
-                    {1, 0, 0, 0}}};
+    processSkin =  {{1, 0},
+                    {1, 1},
+                    {1, 0}} ;
     wardrobe.push_back(processSkin);
 
-    processSkin = {{{0, 0, 0, 0},
-                    {0, 0, 0, 0},
-                    {1, 1, 1, 0},
-                    {0, 1, 0, 0}}};
+    processSkin =  {{1, 1, 1},
+                    {0, 1, 0}} ;
     wardrobe.push_back(processSkin);
 
-    processSkin = {{{0, 0, 0, 0},
-                    {0, 1, 0, 0},
-                    {1, 1, 0, 0},
-                    {0, 1, 0, 0}}};
+    processSkin =  {{0, 1},
+                    {1, 1},
+                    {0, 1}} ;
     wardrobe.push_back(processSkin);
 
     maxSkinPos = wardrobe.size() - 1;
@@ -270,63 +298,75 @@ T_Sprite::T_Sprite(): posX{ 2.0 }, posY{0.0}, currentSkinPos{0}, currentSkin{nul
 
 ISprite* T_Sprite::getInstance()
 {
-    if (T_Sprite::object == nullptr)
+    if (object == nullptr)
     {
         object = new T_Sprite();
     }
     return object;
 }
 
-Z_Sprite::Z_Sprite(): posX{ 2.0 }, posY{0.0}, currentSkinPos{0}, currentSkin{nullptr}
+Z_Sprite::Z_Sprite() 
 {
-    spriteSpace processSkin = {{{0, 0, 0, 0},
-                                {0, 0, 0, 0},
-                                {1, 1, 0, 0},
-                                {0, 1, 1, 0}}}
+    createBody();
+}
+
+void Z_Sprite::createBody()
+{
+    posX = 2.0;
+    posY = 0.0;
+    currentSkinPos = 0;
+    currentSkin = nullptr;
+    spriteSpace processSkin = {{1, 1, 0},
+                               {0, 1, 1}} ;
 
     wardrobe.push_back(processSkin);
 
-
-    processSkin = {{{0, 0, 0, 0},
-                    {0, 1, 0, 0},
-                    {1, 1, 0, 0},
-                    {1, 0, 0, 0}}};
+    processSkin = {{0, 1},
+                   {1, 1},
+                   {1, 0}};
     wardrobe.push_back(processSkin);
-
     maxSkinPos = wardrobe.size() - 1;
 }
 
 ISprite* Z_Sprite::getInstance()
 {
-    if (Z_Sprite::object == nullptr)
+    if (object == nullptr)
     {
         object = new Z_Sprite();
     }
     return object;
 }
 
-S_Sprite::S_Sprite(): posX{ 2.0 }, posY{0.0}, currentSkinPos{0}, currentSkin{nullptr}
+S_Sprite::S_Sprite() 
 {
-    spriteSpace processSkin = {{{0, 0, 0, 0},
-                                {0, 0, 0, 0},
-                                {0, 1, 1, 0},
-                                {1, 1, 0, 0}}}
+    createBody();
+}
+
+void S_Sprite::createBody()
+{
+        
+    posX = 2.0;
+    posY = 0.0; 
+    currentSkinPos = 0; 
+    currentSkin = nullptr;
+
+    spriteSpace processSkin =  {{0, 1, 1},
+                                {1, 1, 0}} ;
 
     wardrobe.push_back(processSkin);
 
 
-    processSkin = {{{0, 0, 0, 0},
-                    {1, 0, 0, 0},
-                    {1, 1, 0, 0},
-                    {0, 1, 0, 0}}};
+    processSkin = {{1, 0},
+                   {1, 1},
+                   {0, 1}};
     wardrobe.push_back(processSkin);
-
     maxSkinPos = wardrobe.size() - 1;
 }
 
+
 ISprite* S_Sprite::getInstance()
 {
-    if (S_Sprite::object == nullptr)
+    if (object == nullptr)
     {
         object = new S_Sprite();
     }
